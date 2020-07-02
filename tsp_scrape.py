@@ -1,7 +1,7 @@
 
 #!/usr/bin/python
 # script to scrape tsp fund prices from tsp.gov
-# adapted from Python 2 script created by user Simbills on Bogleheads.org
+# adapted from Python 2 script created by user Simbilis on Bogleheads.org
 # https://www.bogleheads.org/forum/viewtopic.php?f=1&t=108388
 
 import requests
