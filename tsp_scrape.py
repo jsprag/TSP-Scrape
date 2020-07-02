@@ -11,10 +11,15 @@ import sys
 
 fundTag = {
     'L Income' : 'TSPLINCOME',
-    'L 2020' : 'TSPL2020',
+    'L 2025' : 'TSPL2025',
     'L 2030' : 'TSPL2030',
+    'L 2035' : 'TSPL2035',
     'L 2040' : 'TSPL2040',
+    'L 2045' : 'TSPL2045',
     'L 2050' : 'TSPL2050',
+    'L 2055' : 'TSPL2055',
+    'L 2060' : 'TSPL2060',
+    'L 2065' : 'TSPL2065',
     'G Fund' : 'TSPGFUND',
     'F Fund' : 'TSPFFUND',
     'C Fund' : 'TSPCFUND',
