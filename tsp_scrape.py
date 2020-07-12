@@ -10,21 +10,21 @@ from datetime import datetime, timedelta, date
 import sys
 
 fundTag = {
-    'L Income' : 'TSPLINCOME',
-    'L 2025' : 'TSPL2025',
-    'L 2030' : 'TSPL2030',
-    'L 2035' : 'TSPL2035',
-    'L 2040' : 'TSPL2040',
-    'L 2045' : 'TSPL2045',
-    'L 2050' : 'TSPL2050',
-    'L 2055' : 'TSPL2055',
-    'L 2060' : 'TSPL2060',
-    'L 2065' : 'TSPL2065',
-    'G Fund' : 'TSPGFUND',
-    'F Fund' : 'TSPFFUND',
-    'C Fund' : 'TSPCFUND',
-    'S Fund' : 'TSPSFUND',
-    'I Fund' : 'TSPIFUND'}
+    'Linc'  : 'TSPLINCOME',
+    'L2025' : 'TSPL2025',
+    'L2030' : 'TSPL2030',
+    'L2035' : 'TSPL2035',
+    'L2040' : 'TSPL2040',
+    'L2045' : 'TSPL2045',
+    'L2050' : 'TSPL2050',
+    'L2055' : 'TSPL2055',
+    'L2060' : 'TSPL2060',
+    'L2065' : 'TSPL2065',
+    'G'     : 'TSPGFUND',
+    'F'     : 'TSPFFUND',
+    'C'     : 'TSPCFUND',
+    'S'     : 'TSPSFUND',
+    'I'     : 'TSPIFUND'}
 
 priceHistoryFile = 'tspQuicken.csv'
 
@@ -34,17 +34,21 @@ try:
     lastDate = [row for row in quickenReader][-1][2]
 except:
     lastDate = '06/01/2003'
-startDate = (datetime.strptime(lastDate, '%m/%d/%Y') + timedelta(1)).strftime('%m/%d/%Y')
+startDate = (datetime.strptime(lastDate, '%m/%d/%Y') + timedelta(1)).strftime('%Y%m%d')
 endDate = date.today().strftime('%m/%d/%Y')
 if lastDate == endDate:
     print('already have prices through', endDate)
     sys.exit()
 
 print('checking for new prices starting on', startDate)
-tspSharePricePageUrl = 'https://www.tsp.gov/InvestmentFunds/FundPerformance/index.html'
-postData = {'startdate' : startDate, 'enddate' : endDate, 'whichButton' : 'CSV'}
+tspSharePricePageUrl = 'https://secure.tsp.gov/components/CORS/getSharePrices.html'
+fundStrings = ['{}=1'.format(fund) for fund in fundTag.keys()]
+dateStrings = ['startdate={}'.format(startDate),
+               'enddate={}'.format(date.today().strftime('%Y%m%d')),
+               'format=CSV', 'download=1']
+restString = '?' +  '&'.join(dateStrings + fundStrings)
 
-page = requests.post(tspSharePricePageUrl, data = postData)
+page = requests.get(tspSharePricePageUrl+restString)
 
 reader = csv.reader(page.text.splitlines(), delimiter=',')
 rows = [row for row in reader if len(row) > 0]
