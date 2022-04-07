@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # script to scrape tsp fund prices from tsp.gov
 # adapted from Python 2 script created by user Simbilis on Bogleheads.org
 # https://www.bogleheads.org/forum/viewtopic.php?f=1&t=108388
@@ -7,6 +7,7 @@ import requests
 import csv
 from datetime import datetime, timedelta, date
 import sys
+import platform
 
 fundTag = {
     'L Income'  : 'TSPLINCOME',
@@ -70,5 +71,24 @@ if foundNew:
     with open(priceHistoryFile, "a", newline='') as file:
         writer = csv.writer(file)
         writer.writerows(newRows)
+
+if platform.system() == 'Darwin':
+    # Quicken for Mac can only import prices for a single Security
+    #   Windows> Securities> (Double click a Security)> Price History> Import History From CSV File...
+    #   Required Header: Date, Open, Close, High, Low, Volume
+    #   Required Columns: Date, Close
+    #   Unknown columns are ignored by Quicken
+    # convert multi-Security priceHistoryFile to multiple single-Security security.csv
+    print(f'Converting {priceHistoryFile} to multiple security.csv as required by Quicken For Mac...\n')
+    try:
+        import pandas as pd
+        df_in = pd.read_csv(priceHistoryFile, names='Ticker Close Date'.split())
+        df_in['Open High Low Volume'.split()] = ''
+        for ticker, df in df_in.groupby('Ticker'):
+            csv_name = f'{ticker}.csv'
+            print(csv_name)
+            df.to_csv(csv_name, index=False)
+    except ImportError as e:
+        print(repr(e), '\nMacOS conversion requires pandas:\n\tpip install pandas')
 
 sys.exit()

@@ -1,6 +1,20 @@
 # TSP Share Price Scraper
 
-Scrapes Thrift Savings Plan (TSP) fund prices from [TSP Website][tsp].
+Scrapes Thrift Savings Plan (TSP) fund prices from [TSP Website][tsp] for import into Quicken.
+
+## Quicken (Windows)
+Downloads TSP fund prices into a single file *tspQuicken.csv* for import into *Quicken (Windows)*.
+
+## Quicken For Mac
+*Quicken for Mac* can only import fund prices for a single Security at a time:
+* Windows &rarr; Securities &rarr; (Double click a Security) &rarr; Price History &rarr; Import History From CSV File...
+
+If running on MacOS, this script also saves results into individual *security*.csv files.
+
+```bash
+# MacOS conversion requires pandas
+pip install pandas
+```
 
 # History
 | Date       | Description |

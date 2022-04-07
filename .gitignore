@@ -135,5 +135,5 @@ dmypy.json
 .pytype/
 
 # script output files
-tspQuicken.csv
+*.csv
 .vscode/settings.json
