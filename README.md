@@ -19,6 +19,7 @@ pip install pandas
 # History
 | Date       | Description |
 | ----       | ----------- |
+| 2022-08-22 | update TSP REST URL; TSP yyyy-mm-dd date format; enforce date ordering; support Quicken for Mac (save to multiple: security.csv)
 | 2022-06-03 | [Updated][mysteriousclam-tsp-update] for new TSP.gov website by [mysteriousclam][mysteriousclam-bogle] |
 | 2020-02-03 | [Updated][jsprag-python3] to Python3 by [jsprag][jsprag-bogle] |
 | 2013-01-06 | [Created][simbilis-created] by [Simbilis][simbilis-bogle] on the [Bogleheads forum][bogleheads] |

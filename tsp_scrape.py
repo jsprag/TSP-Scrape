@@ -28,21 +28,26 @@ fundTag = {
 
 priceHistoryFile = 'tspQuicken.csv'
 
-lastDate = ''
+# quicken file dates are: m/dd/yyyy
+# tsp URL dates are: yyyy-mm-dd
+quicken_lastDate = ''
 try:
     quickenReader = csv.reader(open(priceHistoryFile, 'r'))
-    lastDate = [row for row in quickenReader][-1][2]
+    quicken_lastDate = [row for row in quickenReader][-1][2]
 except:
-    lastDate = '01/01/2003'
+    quicken_lastDate = '01/01/2003'
 
-startDate = (datetime.strptime(lastDate, '%m/%d/%Y') + timedelta(1)).strftime('%Y%m%d')
-endDate = date.today().strftime('%m/%d/%Y')
-if lastDate == endDate:
-    print('already have prices through', endDate)
+quicken_endDate = date.today().strftime('%m/%d/%Y')
+if quicken_lastDate == quicken_endDate:
+    print('already have prices through', quicken_endDate)
     sys.exit()
 
-print('checking for new prices starting on', startDate)
-tspSharePricePageUrl = 'https://www.tsp.gov/data/getSharePricesRaw_startdate_20220424_enddate_20220524_Lfunds_1_InvFunds_1_download_0.html'
+tsp_startDate = (datetime.strptime(quicken_lastDate, '%m/%d/%Y') + timedelta(1)).strftime('%Y-%m-%d')
+tsp_endDate = date.today().strftime('%Y-%m-%d')
+
+print('checking for new prices starting on', tsp_startDate)
+tspSharePricePageUrl = f'https://www.tsp.gov/data/fund-price-history.csv?startdate={tsp_startDate}&enddate={tsp_endDate}&Lfunds=1&InvFunds=1&download=0'
+
 headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36'}
 
 page = requests.get(tspSharePricePageUrl, headers=headers)
@@ -54,8 +59,9 @@ foundNew = False
 
 newRows = []
 for row in rows[1:]:
-    currDate = datetime.strptime(row[0], '%b %d. %Y').strftime('%m/%d/%Y')
-    if datetime.strptime(currDate, '%m/%d/%Y') >= datetime.strptime(startDate, '%Y%m%d'):
+    tsp_curDate = row[0]
+    if tsp_curDate >= tsp_startDate:
+        quicken_curDate = datetime.strptime(tsp_curDate, '%Y-%m-%d').strftime('%m/%d/%Y')
         for i in range(1, len(row)):
             tag = tagRow[i].lstrip()
             if tag in fundTag:
@@ -63,13 +69,15 @@ for row in rows[1:]:
                     price = float(row[i])
                 except:
                     continue
-                newRows.append([fundTag[tag], price, currDate])
+                newRows.append([tsp_curDate, fundTag[tag], price, quicken_curDate])
                 foundNew = True
-                print('found', [fundTag[tag], price, currDate])
+                #print('found', [fundTag[tag], price, quicken_curDate])
 
 if foundNew:
     with open(priceHistoryFile, "a", newline='') as file:
         writer = csv.writer(file)
+        # sort by tsp_curDate (yyyy-mm-dd) to ensure most recent record is last
+        newRows = [row[1:] for row in sorted(newRows)]
         writer.writerows(newRows)
 
 if platform.system() == 'Darwin':
